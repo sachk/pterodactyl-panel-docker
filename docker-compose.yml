@@ -1,0 +1,60 @@
+version: "3"
+services:
+    db:
+        environment:
+            - "MYSQL_DATABASE=pterodactyl"
+            - "MYSQL_PASSWORD=pterodactyl"
+            - "MYSQL_RANDOM_ROOT_PASSWORD=yes"
+            - "MYSQL_USER=pterodactyl"
+        image: mariadb:latest
+        networks:
+            - default
+        volumes:
+            - db:/var/lib/mysql
+    http:
+        build:
+            context: services/http
+            dockerfile: Dockerfile
+        depends_on:
+            - "php"
+        ports:
+            - "80:80"
+        networks:
+            - default
+        volumes:
+            - panel:/var/www/html/pterodactyl
+    php:
+        build:
+            context: services/php
+            dockerfile: Dockerfile
+        environment:
+            - "panel_url="
+            - "timezone=" # See http://php.net/manual/en/timezones.php for timezones.
+            - "email_driver=" # smtp, mail, mailgun, mandrill, postmark
+            - "panel_email=" # Required for all.
+            - "email_name=" # Required for all. Spaces require quotes.
+            - "email_user=" # Required for smtp, mandrill, mailgun, and postmark.
+            - "email_pass=" # Required for smtp.
+            - "email_domain=" # Required for smtp and mailgun.
+            - "email_port=" # Required for smtp.
+            - "admin_email="
+            - "admin_first="
+            - "admin_last="
+            - "admin_pass="
+            - "admin_username="
+        networks:
+            - default
+        volumes:
+            - panel:/var/www/html/pterodactyl
+    redis:
+        image: redis:alpine
+        networks:
+            - default
+
+networks:
+    default:
+        driver: bridge
+
+volumes:
+    db:
+    panel:
