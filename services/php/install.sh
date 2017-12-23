@@ -27,7 +27,7 @@ if [ ! -f .env ]; then
     esac
     php artisan migrate --force
     php artisan db:seed --force
-    php artisan pterodactyl:user --email="$admin_email" --password="$admin_pass " \
+    php artisan pterodactyl:user --email="$admin_email" --password="$admin_pass" \
         --admin=1 --firstname="$admin_first" --lastname="$admin_last" --username="$admin_username"
     echo "Setup complete."
 else
