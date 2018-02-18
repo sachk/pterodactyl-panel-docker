@@ -1,46 +1,41 @@
 #!/bin/ash
-if [ ! -f .env ]; then
-    echo ".env not detected. Setting up environment."
+
+##
+# This is an install script to quickly set up Pterodactyl Panel. Do NOT use on an
+# already configured environment, or things can go horribly wrong!
+##
+if [ "$(whoami)" != "pterodactyl" ]; then
+    echo "Rerunning script as webserver user."
+    exec su -c /usr/local/bin/install pterodactyl
+fi
+
+echo "Are you sure you want to continue the install script? (Y/n)"
+read -n1 run
+
+if [ "$run" = "Y" ]; then
+    echo "Running install script."
     echo "Waiting 15 seconds for MariaDB to be ready."
     sleep 15
-    cp .env.example .env
-    printf "\n\nREDIS_HOST=redis\n\nTRUSTED_PROXIES=*" >> .env
+
+    echo "Adding additional parameters to .env file."
+    printf "\n\nTRUSTED_PROXIES=*" >> .env
     php artisan key:generate --force
-    php artisan p:environment:setup --author="$author" --url="$url" --timezone="$timezone" \
-        --cache=redis --session=redis --queue=redis --redis-host=redis --redis-pass="" --redis-port="6379" --disable-settings-ui
+
+    echo "Running configuration scripts."
+    php artisan p:environment:setup --cache=redis --session=redis --queue=redis \
+        --redis-host=redis --redis-pass="" --redis-port=6379
     php artisan p:environment:database --host=db --port=3306 --database=pterodactyl \
         --username=pterodactyl --password=pterodactyl
-    case "$driver" in
-        mail)
-            php artisan p:environment:mail --driver="$driver" --email="$panel_email" --from="$from" \
-                --encryption="$encryption"
-            ;;
-        mandrill)
-            php artisan p:environment:mail --driver="$driver" --email="$panel_email" --from="$from" \
-                --encryption="$encryption" --password="$email_password"
-            ;;
-        postmark)
-            php artisan p:environment:mail --driver="$driver" --email="$panel_email" --from="$from" \
-                --encryption="$encryption" --username="$email_username"
-            ;;
-        mailgun)
-            php artisan p:environment:mail --driver="$driver" --email="$panel_email" --from="$from" \
-                --encryption="$encryption" --host="$host" --password="$email_password"
-            ;;
-        smtp)
-            php artisan p:environment:mail --driver="$driver" --email="$panel_email" --from="$from" \
-                --encryption="$encryption" --host="$host" --port="$port" --username="$email_username" \
-                --password="$email_password"
-            ;;
-    esac
+    php artisan p:environment:mail
+
+    echo "Running migrations."
     php artisan migrate --force
     php artisan db:seed --force
-    php artisan p:user:make --email="$admin_email" --username="$admin_username" \
-        --name-first="$admin_first" --name-last="$admin_last" --password="$admin_password" \
-        --admin=1
-    echo "Setup complete."
+
+    echo "Running user creation script."
+    php artisan p:user:make --admin=1
+
+    echo "Setup complete. Please restart the container to load changes."
 else
-    echo ".env detected. Stopping install script."
-    echo "Waiting 5 seconds for supervisord."
-    sleep 5
+    echo "Exiting."
 fi

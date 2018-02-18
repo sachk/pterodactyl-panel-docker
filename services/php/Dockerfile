@@ -1,4 +1,3 @@
-# https://duckduckgo.com/?q=Parameter+must+be+an+array+or+an+object+that+implements+Countable&t=canonical&ia=web
 FROM php:7.2-fpm-alpine
 
 # Set up all the dependencies for the PHP container.
@@ -31,12 +30,13 @@ RUN curl -Lo panel.tar.gz https://github.com/Pterodactyl/Panel/releases/download
 RUN tar --strip-components=1 -xzvf panel.tar.gz
 RUN cp .env.example .env
 RUN composer install --no-dev
-COPY install.sh /var/www/html/pterodactyl/install
 RUN chmod -R 755 storage/* bootstrap/cache
 
 # Copy the remaining configuration files.
 USER root:root
 RUN mkdir -p /var/log/pterodactyl
+COPY install.sh /usr/local/bin/install
+RUN chmod +x /usr/local/bin/install
 COPY schedule /var/spoon/cron/crontabs/schedule
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
