@@ -1,5 +1,5 @@
 # https://duckduckgo.com/?q=Parameter+must+be+an+array+or+an+object+that+implements+Countable&t=canonical&ia=web
-FROM php:7.1-fpm-alpine
+FROM php:7.2-fpm-alpine
 
 # Set up all the dependencies for the PHP container.
 RUN apk add --no-cache curl git supervisor tar unzip
@@ -26,8 +26,9 @@ RUN chown -R www-data:www-data /var/www/html/pterodactyl
 
 # Deploy panel files.
 USER www-data:www-data
-RUN curl -Lo v0.6.4.tar.gz https://github.com/Pterodactyl/Panel/releases/download/v0.6.4/v0.6.4.tar.gz
-RUN tar --strip-components=1 -xzvf v0.6.4.tar.gz
+RUN curl -Lo panel.tar.gz https://github.com/Pterodactyl/Panel/releases/download/v0.7.0/panel.tar.gz
+RUN tar --strip-components=1 -xzvf panel.tar.gz
+RUN cp .env.example .env
 RUN composer install --no-dev
 COPY install.sh /var/www/html/pterodactyl/install
 RUN chmod -R 755 storage/* bootstrap/cache
