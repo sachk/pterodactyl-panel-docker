@@ -20,12 +20,13 @@ RUN docker-php-ext-install zip
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Set up the server working directory.
+RUN adduser -g '' -D -u 9999 pterodactyl
 RUN mkdir -p /var/www/html/pterodactyl
 WORKDIR /var/www/html/pterodactyl
-RUN chown -R www-data:www-data /var/www/html/pterodactyl
+RUN chown -R pterodactyl:pterodactyl /var/www/html/pterodactyl
 
 # Deploy panel files.
-USER www-data:www-data
+USER pterodactyl:pterodactyl
 RUN curl -Lo panel.tar.gz https://github.com/Pterodactyl/Panel/releases/download/v0.7.0/panel.tar.gz
 RUN tar --strip-components=1 -xzvf panel.tar.gz
 RUN cp .env.example .env
