@@ -27,6 +27,8 @@ services:
         build:
             context: services/php
             dockerfile: Dockerfile
+        depends_on:
+            - "db"
         environment:
             - "panel_url="
             - "timezone=" # See http://php.net/manual/en/timezones.php for timezones.
