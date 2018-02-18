@@ -23,33 +23,18 @@ services:
             - default
         volumes:
             - panel:/var/www/html/pterodactyl
+            - storage:/var/www/html/pterodactyl/storage
     php:
         build:
             context: services/php
             dockerfile: Dockerfile
         depends_on:
             - "db"
-        environment:
-            - "author="
-            - "url="
-            - "timezone=" # See http://php.net/manual/en/timezones.php for timezones.
-            - "driver=" # smtp, mail, mailgun, mandrill, postmark
-            - "panel_email=" # Required for all.
-            - "email_name=" # Required for all. Spaces require quotes.
-            - "email_encryption=" # Required for all.
-            - "email_username=" # Required for smtp, mandrill, mailgun, and postmark.
-            - "email_password=" # Required for smtp.
-            - "email_domain=" # Required for smtp and mailgun.
-            - "email_port=" # Required for smtp.
-            - "admin_email="
-            - "admin_first="
-            - "admin_last="
-            - "admin_password=" # Passwords for the user must include mixed case, at least one number, and at least 8 characters.
-            - "admin_username="
         networks:
             - default
         volumes:
             - panel:/var/www/html/pterodactyl
+            - storage:/var/www/html/pterodactyl/storage
     redis:
         image: redis:alpine
         networks:
@@ -62,3 +47,4 @@ networks:
 volumes:
     db:
     panel:
+    storage:
