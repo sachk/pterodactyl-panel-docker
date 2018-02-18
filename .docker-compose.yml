@@ -30,19 +30,21 @@ services:
         depends_on:
             - "db"
         environment:
-            - "panel_url="
+            - "author="
+            - "url="
             - "timezone=" # See http://php.net/manual/en/timezones.php for timezones.
-            - "email_driver=" # smtp, mail, mailgun, mandrill, postmark
+            - "driver=" # smtp, mail, mailgun, mandrill, postmark
             - "panel_email=" # Required for all.
             - "email_name=" # Required for all. Spaces require quotes.
-            - "email_user=" # Required for smtp, mandrill, mailgun, and postmark.
-            - "email_pass=" # Required for smtp.
+            - "email_encryption=" # Required for all.
+            - "email_username=" # Required for smtp, mandrill, mailgun, and postmark.
+            - "email_password=" # Required for smtp.
             - "email_domain=" # Required for smtp and mailgun.
             - "email_port=" # Required for smtp.
             - "admin_email="
             - "admin_first="
             - "admin_last="
-            - "admin_pass="
+            - "admin_password=" # Passwords for the user must include mixed case, at least one number, and at least 8 characters.
             - "admin_username="
         networks:
             - default

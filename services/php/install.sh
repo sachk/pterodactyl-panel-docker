@@ -6,29 +6,38 @@ if [ ! -f .env ]; then
     cp .env.example .env
     printf "\n\nREDIS_HOST=redis\n\nTRUSTED_PROXIES=*" >> .env
     php artisan key:generate --force
-    php artisan pterodactyl:env --dbhost=db --dbport=3306 --dbname=pterodactyl --dbuser=pterodactyl \
-        --dbpass=pterodactyl --url="$panel_url" --timezone="$timezone" --driver=redis --session-driver=database --queue-driver=database
-    case "$email_driver" in
+    php artisan p:environment:setup --author="$author" --url="$url" --timezone="$timezone" \
+        --cache=redis --session=redis --queue=redis --redis-host=redis --redis-pass="" --redis-port="6379" --disable-settings-ui
+    php artisan p:environment:database --host=db --port=3306 --database=pterodactyl \
+        --username=pterodactyl --password=pterodactyl
+    case "$driver" in
         mail)
-            php artisan pterodactyl:mail --driver="$email_driver" --email="$panel_email" --from-name="$email_name"
+            php artisan p:environment:mail --driver="$driver" --email="$panel_email" --from="$from" \
+                --encryption="$encryption"
             ;;
         mandrill)
-            php artisan pterodactyl:mail --driver="$email_driver" --email="$panel_email" --username="$email_user" --from-name="$email_name"
+            php artisan p:environment:mail --driver="$driver" --email="$panel_email" --from="$from" \
+                --encryption="$encryption" --password="$email_password"
             ;;
         postmark)
-            php artisan pterodactyl:mail --driver="$email_driver" --email="$panel_email" --username="$email_user" --from-name="$email_name"
+            php artisan p:environment:mail --driver="$driver" --email="$panel_email" --from="$from" \
+                --encryption="$encryption" --username="$email_username"
             ;;
         mailgun)
-            php artisan pterodactyl:mail --driver="$email_driver" --email="$panel_email" --username="$email_user" --host="$email_domain" --from-name="$email_name"
+            php artisan p:environment:mail --driver="$driver" --email="$panel_email" --from="$from" \
+                --encryption="$encryption" --host="$host" --password="$email_password"
             ;;
         smtp)
-            php artisan pterodactyl:mail --driver="$email_driver" --email="$panel_email" --username="$email_user" --password="$email_pass" --host="$email_domain" --port="$email_port" --from-name="$email_name"
+            php artisan p:environment:mail --driver="$driver" --email="$panel_email" --from="$from" \
+                --encryption="$encryption" --host="$host" --port="$port" --username="$email_username" \
+                --password="$email_password"
             ;;
     esac
     php artisan migrate --force
     php artisan db:seed --force
-    php artisan pterodactyl:user --email="$admin_email" --password="$admin_pass" \
-        --admin=1 --firstname="$admin_first" --lastname="$admin_last" --username="$admin_username"
+    php artisan p:user:make --email="$admin_email" --username="$admin_username" \
+        --name-first="$admin_first" --name-last="$admin_last" --password="$admin_password" \
+        --admin=1
     echo "Setup complete."
 else
     echo ".env detected. Stopping install script."
