@@ -22,6 +22,7 @@ services:
         networks:
             - default
         volumes:
+            - env:/var/www/html/env
             - panel:/var/www/html/pterodactyl
             - storage:/var/www/html/pterodactyl/storage
     php:
@@ -33,6 +34,7 @@ services:
         networks:
             - default
         volumes:
+            - env:/var/www/html/env
             - panel:/var/www/html/pterodactyl
             - storage:/var/www/html/pterodactyl/storage
     redis:
@@ -46,5 +48,6 @@ networks:
 
 volumes:
     db:
+    env:
     panel:
     storage:
