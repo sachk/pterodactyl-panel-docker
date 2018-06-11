@@ -12,7 +12,7 @@ fi
 echo "Are you sure you want to continue the install script? (Y/n)"
 read -n1 run
 
-if [ "$run" = "Y" ]; then
+if [ "$run" = "y" ] || [ "$run" = "Y" ]; then
     echo "Running install script."
     echo "Waiting 15 seconds for MariaDB to be ready."
     sleep 15
