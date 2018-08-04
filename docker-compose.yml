@@ -1,53 +1,60 @@
-version: "3"
+version: "3.1"
+
 services:
+
     db:
+        image: mariadb
+        restart: unless-stopped
         environment:
             - "MYSQL_DATABASE=pterodactyl"
             - "MYSQL_PASSWORD=pterodactyl"
             - "MYSQL_RANDOM_ROOT_PASSWORD=yes"
             - "MYSQL_USER=pterodactyl"
-        image: mariadb:latest
         networks:
+            - traefik
             - default
         volumes:
-            - db:/var/lib/mysql
+            - ./db:/var/lib/mysql
+
     http:
         build:
             context: services/http
             dockerfile: Dockerfile
+        restart: unless-stopped
         depends_on:
             - "php"
-        ports:
-            - "80:80"
+        expose:
+            - 80
         networks:
+            - traefik
             - default
         volumes:
-            - env:/var/www/html/env
-            - panel:/var/www/html/pterodactyl
-            - storage:/var/www/html/pterodactyl/storage
+            - ./env:/var/www/html/env
+            - ./panel:/var/www/html/pterodactyl
+            - ./storage:/var/www/html/pterodactyl/storage
+
     php:
         build:
             context: services/php
             dockerfile: Dockerfile
+        restart: unless-stopped
         depends_on:
             - "db"
         networks:
             - default
         volumes:
-            - env:/var/www/html/env
-            - panel:/var/www/html/pterodactyl
-            - storage:/var/www/html/pterodactyl/storage
+            - ./env:/var/www/html/env
+            - ./panel:/var/www/html/pterodactyl
+            - ./storage:/var/www/html/pterodactyl/storage
+
     redis:
         image: redis:alpine
+        restart: unless-stopped
         networks:
             - default
 
 networks:
     default:
         driver: bridge
-
-volumes:
-    db:
-    env:
-    panel:
-    storage:
+    traefik:
+        external: true
