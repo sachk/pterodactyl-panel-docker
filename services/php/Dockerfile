@@ -25,12 +25,19 @@ WORKDIR /var/www/html/pterodactyl
 RUN chown -R pterodactyl:pterodactyl /var/www/html/pterodactyl /var/www/html/env
 
 # Deploy panel files.
+# `composer install` has to be run for a few times to make the panel work.
+# See https://github.com/pterodactyl/panel/issues/1369
 USER pterodactyl:pterodactyl
 RUN curl -Lo panel.tar.gz https://github.com/Pterodactyl/Panel/releases/download/${PANEL_VERSION}/panel.tar.gz; \
     tar --strip-components=1 -xzvf panel.tar.gz; \
     cp .env.example /var/www/html/env/.env; \
     ln -s /var/www/html/env/.env /var/www/html/pterodactyl/.env; \
-    composer install --no-dev; \
+    composer install --no-dev --optimize-autoloader; \
+    composer install --no-dev --optimize-autoloader; \
+    composer install --no-dev --optimize-autoloader; \
+    composer install --no-dev --optimize-autoloader; \
+    composer install --no-dev --optimize-autoloader; \
+    composer install --no-dev --optimize-autoloader; \
     chmod -R 755 storage/* bootstrap/cache
 
 # Copy the remaining configuration files.
