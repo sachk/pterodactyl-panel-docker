@@ -25,6 +25,12 @@ services:
             - "php"
         expose:
             - 80
+        labels:
+          - "traefik.docker.network=traefik"
+          - "traefik.enable=true"
+          - "traefik.basic.frontend.rule=Host:panel.example.com"
+          - "traefik.basic.port=80"
+          - "traefik.basic.protocol=http"
         networks:
             - traefik
             - default
@@ -41,6 +47,7 @@ services:
         depends_on:
             - "db"
         networks:
+            - pterodactyl_nw
             - default
         volumes:
             - env:/var/www/html/env
@@ -63,4 +70,6 @@ networks:
     default:
         driver: bridge
     traefik:
+        external: true
+    pterodactyl_nw:
         external: true
