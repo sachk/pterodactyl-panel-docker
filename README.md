@@ -1,5 +1,5 @@
 # pterodactyl-panel-docker
-[![GitHub release](https://img.shields.io/github/release/TehTotalPwnage/pterodactyl-panel-docker.svg?style=for-the-badge)](https://github.com/TehTotalPwnage/pterodactyl-panel-docker/releases)
+
 > Docker Compose configuration for the [Pterodactyl Panel](https://github.com/Pterodactyl/Panel).
 
 Pterodactyl is an open-source control panel used for hosting numerous game-related
@@ -22,6 +22,39 @@ of containers and Dockerfiles.
 that Nginx performs better than Caddy in handling requests. In addition to this,
 Nginx, while having a more complicated configuration file, doesn't enforce HTTPS,
 a feature of Caddy which only complicates the setup of the HTTP Docker container.
+
+# Example of a MySQL docker-compose
+```
+version: "3.1"
+
+services:
+
+    mariadb: # for minecraft servers
+        image: mariadb
+        restart: unless-stopped
+        container_name: main_mysql
+        expose:
+            - 3306
+        environment:
+            - "MYSQL_DATABASE=db"
+            - "MYSQL_PASSWORD=pterodactyl"
+            - "MYSQL_RANDOM_ROOT_PASSWORD=yes"
+            - "MYSQL_USER=pterodactyl"
+        volumes:
+            - db:/var/lib/mysql
+        networks:
+            pterodactyl_nw:
+                ipv4_address: 172.254.0.254
+            default:
+
+volumes:
+  db:
+
+networks:
+    pterodactyl_nw:
+        external: true
+```
+and the database address is `172.254.0.254`, port is `3306`. check logs for the root password.
 
 ## Usage
 The instructions are fairly self explanatory: clone the repository and launch the
