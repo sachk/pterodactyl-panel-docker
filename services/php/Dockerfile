@@ -2,6 +2,8 @@ FROM php:7.2-fpm-alpine
 
 ENV PANEL_VERSION=v0.7.15
 
+RUN (crontab -l 2>/dev/null; echo "* * * * * php /var/www/html/pterodactyl/artisan schedule:run >> /dev/null 2>&1") | crontab -
+
 # Set up all the dependencies for the PHP container.
 RUN apk add --no-cache curl git supervisor tar unzip; \
     docker-php-ext-install bcmath; \
