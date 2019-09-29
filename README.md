@@ -1,6 +1,7 @@
 # pterodactyl-panel-docker
 
-> Docker Compose configuration for the [Pterodactyl Panel](https://github.com/Pterodactyl/Panel).
+> Docker Compose configuration for the [Pterodactyl Panel](https://github.com/Pterodactyl/Panel).  
+  Link to daemon's docker-compose repository: https://github.com/BirkhoffLee/pterodactyl-daemon-Dockerfile
 
 Pterodactyl is an open-source control panel used for hosting numerous game-related
 services, such as Minecraft and Teamspeak servers. Setting it up, however, takes
